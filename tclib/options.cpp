@@ -145,6 +145,7 @@ namespace boost {
             }
             if (version >= 3) { // rev > 662
                 ar & opts.activationKey;
+                ar & opts.activationKeySecondary;
             }
             if (version >= 4) { // rev > 700
                 ar & opts.beepForMistakes;

@@ -168,6 +168,22 @@
                                 </object>
                                 <border>3</border>
                               </object>
+							<object class="sizeritem">
+								<object class="wxStaticText">
+									<label> or </label>
+								</object>
+								<flag>wxRIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+							</object>
+								<object class="sizeritem">
+									<object class="wxChoice" name="ActivationKeysSecondary">
+										<content>
+											<item>Caps Lock</item>
+										</content>
+										<selection>0</selection>
+										<tooltip>If you don't want to use Space to activate TouchCursor you can choose a different key from this list.</tooltip>
+									</object>
+									<border>3</border>
+								</object>
                             </object>
                           </object>
                           <cols>1</cols>

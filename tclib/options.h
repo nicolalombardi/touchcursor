@@ -1,4 +1,4 @@
-// Copyright © 2010 Martin Stone.
+// Copyright Â© 2010 Martin Stone.
 // 
 // This file is part of TouchCursor.
 // 
@@ -40,6 +40,7 @@ struct Options {
     bool showInNotificationArea;
     bool checkForUpdates;
     int activationKey;
+    int activationKeySecondary;
 
     // Key mapping
     static const int maxCodes = 0x100;

@@ -277,6 +277,11 @@ namespace {
         return true;
     }
 
+    bool tapActivationKeySecondary(DWORD) {
+        tapKey(options.activationKeySecondary);
+        return true;
+    }
+
     bool activationKeyDownThenKey(DWORD code) {
         keyDownEvent(options.activationKey);
         keyDownEvent(code);
@@ -405,6 +410,9 @@ namespace {
             if (code == options.activationKey) {
                 e = isKeyDown(wParam) ? activationDown : activationUp;
             }
+            else if (code == options.activationKeySecondary) {
+                e = isKeyDown(wParam) ? activationSecondaryDown : activationSecondaryUp;
+            }
             else if (code == configKey && isKeyDown(wParam)) {
                 e = configKeyDown;
             }
@@ -420,7 +428,7 @@ namespace {
 
 
     private:
-        enum Event {activationDown, activationUp, mappedKeyDown, mappedKeyUp, otherKeyDown, otherKeyUp, configKeyDown, numEvents};
+        enum Event {activationDown, activationUp, activationSecondaryDown, activationSecondaryUp, mappedKeyDown, mappedKeyUp, otherKeyDown, otherKeyUp, configKeyDown, numEvents};
         enum State {idle, waitMappedDown, waitMappedDownSpaceEmitted, waitMappedUp, waitMappedUpSpaceEmitted, mapping, numStates, self, na};
         typedef bool (*ActionFunc)(DWORD code);
 
@@ -494,6 +502,8 @@ namespace {
         {   // idle
             {activationDown, waitMappedDown, discardKey},
             {activationUp, self, 0},
+            {activationSecondaryDown, waitMappedDown, discardKey},
+            {activationSecondaryUp, self, 0},
             {mappedKeyDown, self, 0},
             {mappedKeyUp, self, 0},
             {otherKeyDown, self, 0},
@@ -503,6 +513,8 @@ namespace {
         {   // waitMappedDown
             {activationDown, self, discardKey},
             {activationUp, idle, tapActivationKey},
+            {activationSecondaryDown, self, discardKey},
+            {activationSecondaryUp, idle, tapActivationKeySecondary},
             {mappedKeyDown, waitMappedUp, delayKeyDown},
             {mappedKeyUp, self, 0},
             {otherKeyDown, waitMappedDownSpaceEmitted, activationKeyDownThenKey}, 
@@ -512,6 +524,8 @@ namespace {
         {   // waitMappedDownSpaceEmitted
             {activationDown, self, discardKey},
             {activationUp, idle, 0},
+            {activationSecondaryDown, self, discardKey},
+            {activationSecondaryUp, idle, 0},
             {mappedKeyDown, waitMappedUpSpaceEmitted, delayKeyDown},
             {mappedKeyUp, self, 0},
             {otherKeyDown, self, 0},
@@ -521,6 +535,8 @@ namespace {
         {   // waitMappedUp (still might emit the activation key)
             {activationDown, self, discardKey},
             {activationUp, idle, emitActDownSavedDownActUp},
+            {activationSecondaryDown, self, discardKey},
+            {activationSecondaryUp, idle, emitActDownSavedDownActUp},
             {mappedKeyDown, mapping, mapSavedAndMapCurrentDown},
             {mappedKeyUp, mapping, mapSavedAndMapCurrentUp},
             {otherKeyDown, idle, emitActSavedAndCurrentDown},
@@ -530,6 +546,8 @@ namespace {
         {   // waitMappedUpSpaceEmitted 
             {activationDown, self, discardKey},
             {activationUp, idle, emitSavedDownAndActUp},
+            {activationSecondaryDown, self, discardKey},
+            {activationSecondaryUp, idle, emitSavedDownAndActUp},
             {mappedKeyDown, mapping, mapSavedAndMapCurrentDown},
             {mappedKeyUp, mapping, mapSavedAndMapCurrentUp},
             {otherKeyDown, idle, emitSavedAndCurrentDown},
@@ -539,6 +557,8 @@ namespace {
         {   // mapping (definitely eaten the activation key)
             {activationDown, self, discardKey},
             {activationUp, idle, discardKeyAndReleaseMappedKeys},
+            {activationSecondaryDown, self, discardKey},
+            {activationSecondaryUp, idle, discardKeyAndReleaseMappedKeys},
             {mappedKeyDown, self, mapKeyDown},
             {mappedKeyUp, self, mapKeyUp},
             {otherKeyDown, self, 0},

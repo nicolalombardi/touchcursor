@@ -174,6 +174,7 @@ public:
 
     void populateActivationKeyList() {
         ActivationKeys->Clear();
+        ActivationKeysSecondary->Clear();
         //const int activationOptions[] = {VK_SPACE, VK_CAPITAL, VK_TAB, VK_OEM_1, VK_OEM_3, VK_OEM_7, 0}; //XXX win-specific codes in otherwise x-platform file :-(
         //for (const int* p = activationOptions; *p; ++p) {
         //    ActivationKeys->Append(win32funcs::VkCodeToStr(*p), reinterpret_cast<void*>(*p));
@@ -183,6 +184,7 @@ public:
                 wxString name = win32funcs::VkCodeToStr(i);
                 if (!name.empty()) {
                     ActivationKeys->Append(name, reinterpret_cast<void*>(i));
+                    ActivationKeysSecondary->Append(name, reinterpret_cast<void*>(i));
                 }
             }
         }
@@ -196,6 +198,10 @@ public:
         return activationKeyCode(ActivationKeys->GetSelection());
     }
 
+    int selectedActivationKeySecondary() const {
+        return activationKeyCode(ActivationKeysSecondary->GetSelection());
+    }
+
     Options readOptionsFromControls() {
         Options tempOpts = options; // Do NOT use defaults, as that resets the first run day
 
@@ -207,6 +213,8 @@ public:
         tempOpts.checkForUpdates = CheckForUpdates->GetValue();
 
         tempOpts.activationKey = selectedActivationKey();
+        tempOpts.activationKeySecondary = selectedActivationKeySecondary();
+
 
         MappingFromBox(tempOpts.keyMapping, tempOpts.maxCodes, KeyList);
 
@@ -230,12 +238,19 @@ public:
         CheckForUpdates->SetValue(options.checkForUpdates);
 
         // look up activation key option
-        for (unsigned i=0; i<ActivationKeys->GetCount(); ++i) {
+        for (unsigned i = 0; i < ActivationKeys->GetCount(); ++i) {
             if (activationKeyCode(i) == options.activationKey) {
                 ActivationKeys->SetSelection(i);
                 break;
             }
-         }
+        }
+
+        for (unsigned i = 0; i < ActivationKeysSecondary->GetCount(); ++i) {
+            if (activationKeyCode(i) == options.activationKeySecondary) {
+                ActivationKeysSecondary->SetSelection(i);
+                break;
+            }
+        }
 
         MappingToBox(options.keyMapping, options.maxCodes, KeyList);
 
